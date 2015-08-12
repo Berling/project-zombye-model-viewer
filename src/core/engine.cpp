@@ -8,7 +8,7 @@
 #include <graphics/graphics_system.hpp>
 
 namespace core {
-	engine::engine() noexcept
+	engine::engine(const std::string& file_name) noexcept
 	: quit_{false} {
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 			auto sdl_error = std::string{SDL_GetError()};
@@ -17,6 +17,8 @@ namespace core {
 		}
 
 		graphics_system_ = std::make_unique<graphics::graphics_system>(*this);
+
+		utils::log << "loading model " << file_name << std::endl;
 	}
 
 	engine::~engine() {

@@ -2,6 +2,7 @@
 #define __CORE_ENGINE_HPP__
 
 #include <memory>
+#include <string>
 
 namespace graphics {
 	class graphics_system;
@@ -14,7 +15,7 @@ namespace core {
 		std::unique_ptr<graphics::graphics_system> graphics_system_;
 
 	public:
-		engine() noexcept;
+		engine(const std::string& file_name) noexcept;
 		~engine();
 
 		engine(const engine& rhs) = delete;
