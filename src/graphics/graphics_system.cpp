@@ -6,18 +6,23 @@
 
 #include <core/engine.hpp>
 #include <graphics/graphics_system.hpp>
+#include <graphics/shader_manager.hpp>
+#include <graphics/texture_manager.hpp>
+#include <utils/logger.hpp>
 
 namespace graphics {
 	graphics_system::graphics_system(core::engine& engine)
 	: engine_{engine}, window_{nullptr, [](SDL_Window*){}}, context_{nullptr}, width_{800}, height_{600},
-	fullscreen_{false}, clear_color_{glm::vec4{0.4f, 0.6f, 0.9f, 1.f}} {
+	fullscreen_{false}, clear_color_{glm::vec4{0.4f, 0.6f, 0.9f, 1.f}},
+	shader_manager_{std::make_unique<graphics::shader_manager>(engine_)},
+	texture_manager_{std::make_unique<graphics::texture_manager>(engine_)} {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,1);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,8);
 
 		auto window_mask = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | (fullscreen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 		name_ = "ZMDL Viewer";

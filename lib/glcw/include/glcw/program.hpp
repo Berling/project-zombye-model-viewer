@@ -2,7 +2,6 @@
 #define __GLCW_PROGRAM_HPP__
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include <GL/glew.h>
@@ -54,15 +53,14 @@ namespace glcw {
 		void uniform(const std::string& name, size_t count, bool transpose, const std::vector<glm::mat3>& values) noexcept;
 		void uniform(const std::string& name, size_t count, bool transpose, const std::vector<glm::mat4>& values) noexcept;
 
+		void bind_frag_data_location(const std::string& name, uint32_t color_number) noexcept;
+
 	private:
 		void bind_attribute_location(const std::string& name, uint32_t index) noexcept;
-		void bind_frag_data_location(const std::string& name, uint32_t color_number) noexcept;
-		GLuint resolve_uniform_location(const std::string& name);
 
 	private:
 		GLuint id_;
 		std::vector<shader_ptr> shaders_;
-		std::unordered_map<std::string, GLuint> uniform_locations_;
 
 		friend class vertex_layout;
 	};

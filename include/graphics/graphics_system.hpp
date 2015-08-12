@@ -2,12 +2,18 @@
 #define __GRAPHICS_GRAPHICS_SYSTEM_HPP__
 
 #include <memory>
+#include <string>
 
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 
 namespace core {
 	class engine;
+}
+
+namespace graphics {
+	class shader_manager;
+	class texture_manager;
 }
 
 namespace graphics {
@@ -21,6 +27,8 @@ namespace graphics {
 		size_t height_;
 		bool fullscreen_;
 		glm::vec4 clear_color_;
+		std::unique_ptr<graphics::shader_manager> shader_manager_;
+		std::unique_ptr<graphics::texture_manager> texture_manager_;
 
 	public:
 		graphics_system(core::engine& engine);
@@ -42,6 +50,14 @@ namespace graphics {
 
 		size_t height() const noexcept {
 			return height_;
+		}
+
+		auto& shader_manager() {
+			return *shader_manager_;
+		}
+
+		auto& texture_manager() {
+			return *texture_manager_;
 		}
 	};
 }

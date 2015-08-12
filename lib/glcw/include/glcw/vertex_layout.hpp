@@ -23,8 +23,11 @@ namespace glcw {
 	};
 
 	class vertex_layout {
+	private:
+		std::vector<vertex_attribute> vertex_attributes_;
+
 	public:
-		vertex_layout() noexcept = default;
+		vertex_layout() = default;
 		~vertex_layout() = default;
 
 		vertex_layout(const vertex_layout& rhs) = delete;
@@ -37,9 +40,6 @@ namespace glcw {
 		void setup_layout(vertex_array& vertex_array, const std::unique_ptr<vertex_buffer>* buffers) noexcept;
 		void setup_layout(vertex_array& vertex_array, vertex_buffer* buffers) noexcept;
 		void setup_program(program& program, const std::string& fragcolor_name) noexcept;
-
-	private:
-		std::vector<vertex_attribute> vertex_attributes_;
 	};
 }
 

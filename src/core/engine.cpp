@@ -6,6 +6,7 @@
 
 #include <core/engine.hpp>
 #include <graphics/graphics_system.hpp>
+#include <rendering/renderer.hpp>
 
 namespace core {
 	engine::engine(const std::string& file_name) noexcept
@@ -15,10 +16,10 @@ namespace core {
 			SDL_ClearError();
 			throw std::runtime_error{"could not initialize SDL" + sdl_error};
 		}
-
 		graphics_system_ = std::make_unique<graphics::graphics_system>(*this);
+		renderer_ = std::make_unique<rendering::renderer>(*this, file_name);
 
-		utils::log << "loading model " << file_name << std::endl;
+		utils::log(utils::log_level::LOG_INFO) << "load model " << file_name << std::endl;
 	}
 
 	engine::~engine() {
@@ -27,6 +28,7 @@ namespace core {
 
 	void engine::update(float delta_time) {
 		graphics_system_->begin();
+		renderer_->render(delta_time);
 		graphics_system_->end(delta_time);
 	}
 
@@ -40,6 +42,12 @@ namespace core {
 			while (SDL_PollEvent(&event)) {
 				if (event.type == SDL_QUIT) {
 					quit_ = true;
+				} else if (event.type == SDL_KEYDOWN) {
+					static bool debug_render = false;
+					if (event.key.keysym.scancode == SDL_SCANCODE_E) {
+						debug_render = !debug_render;
+						renderer_->debug_mode(debug_render);
+					}
 				}
 			}
 			last_time = current_time;

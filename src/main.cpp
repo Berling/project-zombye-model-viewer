@@ -4,7 +4,7 @@
 
 int main(int argc, char const* argv[]) {
 	if (argc == 1) {
-		throw std::runtime_error("option missing from command line");
+		throw std::runtime_error("argument missing from command line");
 	} else if (argc > 2) {
 		throw std::runtime_error("unrecognized option");
 	}

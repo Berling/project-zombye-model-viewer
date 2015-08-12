@@ -39,15 +39,17 @@ namespace glcw {
 		}
 
 		void data(size_t size, const void* data) noexcept {
-			data(size, data, usage_);
+			this->data(size, data, usage_);
 		}
 
 		void data(size_t size, const void* data, GLenum usage) noexcept {
+			bind();
 			usage_ = usage;
 			glBufferData(target, size, data, usage);
 		}
 
 		void sub_data(intptr_t offset, size_t size, const void* data) noexcept {
+			bind();
 			glBufferSubData(target, offset, size, data);
 		}
 
