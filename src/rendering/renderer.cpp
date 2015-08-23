@@ -113,6 +113,13 @@ namespace rendering {
 		};
 		point_lights_.emplace_back(l);
 
+		l = {
+			glm::vec3{5.f, 5.f, -10.f},
+			glm::vec3{1.f},
+			30.f
+		};
+		point_lights_.emplace_back(l);
+
 		view_ = glm::lookAt(
 			glm::vec3{0.f},
 			glm::vec3{0.f},
