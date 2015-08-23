@@ -5,6 +5,7 @@
 #include <string>
 
 #include <asset/asset_manager.hpp>
+#include <core/arc_ball.hpp>
 
 namespace graphics {
 	class graphics_system;
@@ -21,6 +22,16 @@ namespace core {
 		asset::asset_manager asset_manager_;
 		std::unique_ptr<graphics::graphics_system> graphics_system_;
 		std::unique_ptr<rendering::renderer> renderer_;
+		float center_;
+		float scene_radius_;
+		float zoom_;
+		arc_ball camera_;
+		glm::vec2 mouse_down_;
+		bool dragging_;
+		bool zooming_;
+		bool rotating_;
+		glm::vec3 camera_position_;
+		glm::vec2 translate_;
 
 	public:
 		engine(const std::string& file_name) noexcept;

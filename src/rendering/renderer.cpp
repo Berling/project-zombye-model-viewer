@@ -112,17 +112,17 @@ namespace rendering {
 			20.f
 		};
 		point_lights_.emplace_back(l);
+
+		view_ = glm::lookAt(
+			glm::vec3{0.f},
+			glm::vec3{0.f},
+			glm::vec3{0.f, 1.f, 0.f}
+		);
 	}
 
 	renderer::~renderer() {}
 
 	void renderer::render(float delta_time) {
-		view_ = glm::lookAt(
-			glm::vec3{0.f, 2.f, 5.f},
-			glm::vec3{0.f},
-			glm::vec3{0.f, 1.f, 0.f}
-		);
-
 		glEnable(GL_DEPTH_TEST);
 		g_buffer_.bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

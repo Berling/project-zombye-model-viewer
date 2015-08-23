@@ -68,6 +68,14 @@ namespace rendering {
 			return camera_position_;
 		}
 
+		auto& view_matrix() const noexcept {
+			return view_;
+		}
+
+		void view_matrix(const glm::mat4& view_matrix) {
+			view_ = view_matrix;
+		}
+
 		void debug_mode(bool value) {
 			debug_render_ = value;
 		}
