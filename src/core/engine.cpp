@@ -8,6 +8,8 @@
 
 #include <core/engine.hpp>
 #include <graphics/graphics_system.hpp>
+#include <rendering/animated_mesh.hpp>
+#include <rendering/skeleton.hpp>
 #include <rendering/renderer.hpp>
 
 namespace core {
@@ -49,6 +51,16 @@ namespace core {
 			glm::vec3{translate_ * scene_radius_ / zoom_, -center_ * scene_radius_ / zoom_});
 		renderer_->view_matrix(translation_matrix * rotation_matrix);
 
+		auto& anim = renderer_->animation();
+		if (anim && animation_triggered) {
+			if (play_animation_) {
+				anim->change_state(current_animation_);
+			} else {
+				anim->change_state("");
+			}
+			animation_triggered = false;
+		}
+
 		graphics_system_->begin();
 		renderer_->render(delta_time);
 		graphics_system_->end(delta_time);
@@ -69,6 +81,35 @@ namespace core {
 					if (event.key.keysym.scancode == SDL_SCANCODE_E) {
 						debug_render = !debug_render;
 						renderer_->debug_mode(debug_render);
+					}
+
+					auto& anim = renderer_->animation();
+					if (anim) {
+						static auto anims = anim->skeleton()->animations();
+						static auto anim_it = anims.begin();
+						if (event.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+							play_animation_ = !play_animation_;
+							animation_triggered = true;
+						} else if (event.key.keysym.scancode == SDL_SCANCODE_LEFT) {
+							if (anim_it > anims.begin()) {
+								--anim_it;
+							} else {
+								anim_it = anims.end() - 1;
+							}
+							play_animation_ = true;
+							animation_triggered = true;
+						} else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT) {
+							if (anim_it < anims.end() - 1) {
+								++anim_it;
+							} else {
+								anim_it = anims.begin();
+							}
+							play_animation_ = true;
+							animation_triggered = true;
+						}
+						if (anims.begin() != anims.end()) {
+							current_animation_ = *anim_it;
+						}
 					}
 				} else if (event.type == SDL_MOUSEBUTTONDOWN) {
 					auto x = float(event.button.x);

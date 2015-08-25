@@ -113,7 +113,6 @@ namespace rendering {
 
 		if (skeleton != "") {
 			animation_ = std::make_unique<animated_mesh>(engine_, *this, mesh, skeleton);
-			animation_->change_state("run");
 		} else {
 			suzanne_ = mesh_manager_.load(mesh);
 			if (!suzanne_) {

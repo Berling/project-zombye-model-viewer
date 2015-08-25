@@ -32,6 +32,9 @@ namespace core {
 		bool rotating_;
 		glm::vec3 camera_position_;
 		glm::vec2 translate_;
+		bool play_animation_ = false;
+		bool animation_triggered = false;
+		std::string current_animation_;
 
 	public:
 		engine(const std::string& mesh, const std::string& skeleton) noexcept;

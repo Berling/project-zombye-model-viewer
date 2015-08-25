@@ -99,6 +99,10 @@ namespace rendering {
 		void debug_mode(bool value) {
 			debug_render_ = value;
 		}
+
+		auto& animation() const {
+			return animation_;
+		}
 	};
 }
 

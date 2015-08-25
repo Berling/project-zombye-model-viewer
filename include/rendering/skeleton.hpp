@@ -86,6 +86,14 @@ namespace rendering {
             }
             return it->second;
         }
+
+        std::vector<std::string> animations() const {
+            std::vector<std::string> anims;
+            for (auto& a : animations_) {
+                anims.emplace_back(a.first);
+            }
+            return anims;
+        }
     };
 }
 
