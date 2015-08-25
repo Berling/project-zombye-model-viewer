@@ -21,8 +21,8 @@ solution "tupp"
 		optimize "Full"
 
 	configuration {"gmake","windows"}
-		includedirs {"lib/sdl2/mingw32-x86_64/include", "lib/sdl2/mingw32-i686/include"}
-		libdirs {"lib/sdl2/mingw32-x86_64/lib", "lib/sdl2/mingw32-i686/lib"}
+	includedirs {"lib/sdl2/mingw32-x86_64/include", "lib/sdl2/mingw32-i686/include"}
+	libdirs {"lib/sdl2/mingw32-x86_64/lib", "lib/sdl2/mingw32-i686/lib"}
 
 	configuration {"gmake", "linux"}
 
@@ -149,7 +149,7 @@ solution "tupp"
 			postbuildcommands {
 				"copy ..\\lib\\sdl2\\mingw32-x86_64\\bin\\SDL2.dll SDL2.dll",
 			}
-			linkoptions {"-lmingw32 ../lib/glew/build/GLEW.lib ../lib/glcw/build/glcw.lib ../lib/log/build/log.lib ../lib/jsoncpp/build/jsoncpp.lib -lopengl32 -lSDL2main -lSDL2 -static-libgcc -static-libstdc++"}
+			linkoptions {"-lmingw32 ../lib/glew/build/GLEW.lib ../lib/glcw/build/glcw.lib ../lib/log/build/log.lib -lopengl32 -lSDL2main -lSDL2 -static-libgcc -static-libstdc++"}
 			links {"GLEW", "log", "glcw", "jsoncpp"}
 
 		configuration {"gmake", "linux"}
