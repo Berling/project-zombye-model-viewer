@@ -1,6 +1,8 @@
 {
+   "black.dds" : 5,
+   "greyscale.dds" : 4,
    "greyscale_normal.dds" : 2,
-   "id_count" : 3,
+   "id_count" : 5,
    "weighted_companion_cube_export.dds" : 1,
    "weighted_companion_cube_export_material.dds" : 3
 }

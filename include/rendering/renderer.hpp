@@ -10,6 +10,8 @@
 #include <glm/glm.hpp>
 
 #include <rendering/mesh_manager.hpp>
+#include <rendering/skeleton_manager.hpp>
+#include <rendering/skinned_mesh_manager.hpp>
 
 namespace core {
 	class engine;
@@ -18,6 +20,7 @@ namespace core {
 namespace rendering {
 	struct point_light;
 	class screen_quad;
+	class animated_mesh;
 }
 
 namespace rendering {
@@ -25,6 +28,7 @@ namespace rendering {
 	private:
 		core::engine& engine_;
 		glcw::vertex_layout staticmesh_layout_;
+		glcw::vertex_layout skinnedmesh_layout_;
 		glm::mat4 projection_;
 		glm::mat4 view_;
 		glm::vec3 camera_position_;
@@ -34,8 +38,12 @@ namespace rendering {
 		glcw::program screen_quad_program_;
 		std::vector<std::unique_ptr<screen_quad>> debug_screen_quads_;
 		mesh_manager mesh_manager_;
+		skeleton_manager skeleton_manager_;
+		skinned_mesh_manager skinned_mesh_manager_;
 		glcw::program world_program_;
+		glcw::program animation_program_;
 		mesh_ptr suzanne_;
+		std::unique_ptr<animated_mesh> animation_;
 		std::shared_ptr<const glcw::texture> dummy_texture_;
 		std::shared_ptr<const glcw::texture> dummy_specular_;
 		std::shared_ptr<const glcw::texture> dummy_normal_;
@@ -45,7 +53,7 @@ namespace rendering {
 		std::vector<point_light> point_lights_;
 
 	public:
-		renderer(core::engine& engine, const std::string& file_name);
+		renderer(core::engine& engine, const std::string& mesh, const std::string& skeleton);
 		~renderer();
 
 		renderer(const renderer& rhs) = delete;
@@ -60,8 +68,20 @@ namespace rendering {
 			return staticmesh_layout_;
 		}
 
+		auto& skinnedmesh_layout() {
+			return skinnedmesh_layout_;
+		}
+
 		auto& get_mesh_manager() {
 			return mesh_manager_;
+		}
+
+		auto& skeleton_manager() {
+			return skeleton_manager_;
+		}
+
+		auto& skinned_mesh_manager() {
+			return skinned_mesh_manager_;
 		}
 
 		auto& camera_position() {

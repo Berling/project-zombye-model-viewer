@@ -34,7 +34,7 @@ namespace core {
 		glm::vec2 translate_;
 
 	public:
-		engine(const std::string& file_name) noexcept;
+		engine(const std::string& mesh, const std::string& skeleton) noexcept;
 		~engine();
 
 		engine(const engine& rhs) = delete;

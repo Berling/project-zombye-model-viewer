@@ -26,6 +26,26 @@ solution "tupp"
 
 	configuration {"gmake", "linux"}
 
+	project "animation_converter"
+		kind "ConsoleApp"
+
+		location "animation_converter"
+
+		buildoptions "-std=c++1y"
+
+		files "animation_converter/src/**.cpp"
+
+		defines "GLM_FORCE_RADIANS"
+
+		links "jsoncpp"
+
+		configuration {"gmake", "linux"}
+			if _OPTIONS["cc"] == "clang" then
+				toolset "clang"
+				buildoptions "-stdlib=libc++"
+				links "c++"
+			end
+
 	project "mesh_converter"
 		kind "ConsoleApp"
 

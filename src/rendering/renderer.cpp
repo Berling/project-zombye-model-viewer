@@ -9,17 +9,26 @@
 #include <graphics/graphics_system.hpp>
 #include <graphics/shader_manager.hpp>
 #include <graphics/texture_manager.hpp>
+#include <rendering/animated_mesh.hpp>
+#include <rendering/skinned_mesh.hpp>
 #include <rendering/point_light.hpp>
 #include <rendering/renderer.hpp>
 #include <rendering/screen_quad.hpp>
 #include <rendering/vertex.hpp>
 
 namespace rendering {
-	renderer::renderer(core::engine& engine, const std::string& file_name)
-	: engine_{engine}, mesh_manager_{engine_, *this}, debug_render_{false}, camera_position_{-10.f, 20.f, 0.f} {
+	renderer::renderer(core::engine& engine, const std::string& mesh, const std::string& skeleton)
+	: engine_{engine}, mesh_manager_{engine_, *this}, skeleton_manager_{engine_}, skinned_mesh_manager_{engine_, *this}, debug_render_{false}, camera_position_{-10.f, 20.f, 0.f} {
 		staticmesh_layout_.emplace_back("_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
 		staticmesh_layout_.emplace_back("_texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 3 * sizeof(float));
 		staticmesh_layout_.emplace_back("_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 5 * sizeof(float));
+
+		skinnedmesh_layout_.emplace_back("_position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
+		skinnedmesh_layout_.emplace_back("_texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 3 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 5 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_tangent", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 8 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 11 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 15 * sizeof(float));
 
 		auto width = static_cast<float>(engine.graphics_system().width());
 		auto height = static_cast<float>(engine.graphics_system().height());
@@ -86,9 +95,30 @@ namespace rendering {
 		world_program_.bind_frag_data_location("position_color", 3);
 		world_program_.link();
 
-		suzanne_ = mesh_manager_.load(file_name);
-		if (!suzanne_) {
-			throw std::runtime_error{"could not load " + file_name};
+		vertex_shader = engine_.graphics_system().shader_manager().load("shaders/animation.vert", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error{"could not load animation.vert"};
+		}
+		animation_program_.attach_shader(vertex_shader);
+		fragment_shader = engine_.graphics_system().shader_manager().load("shaders/animation.frag", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error{"could not load animation.frag"};
+		}
+		animation_program_.attach_shader(fragment_shader);
+		skinnedmesh_layout_.setup_program(animation_program_, "albedo_color");
+		animation_program_.bind_frag_data_location("normal_color", 1);
+		animation_program_.bind_frag_data_location("specular_color", 2);
+		animation_program_.bind_frag_data_location("position_color", 3);
+		animation_program_.link();
+
+		if (skeleton != "") {
+			animation_ = std::make_unique<animated_mesh>(engine_, *this, mesh, skeleton);
+			animation_->change_state("run");
+		} else {
+			suzanne_ = mesh_manager_.load(mesh);
+			if (!suzanne_) {
+				throw std::runtime_error{"could not load " + mesh};
+			}
 		}
 
 		vertex_shader = engine_.graphics_system().shader_manager().load("shaders/deferred.vert", GL_VERTEX_SHADER);
@@ -133,16 +163,32 @@ namespace rendering {
 		glEnable(GL_DEPTH_TEST);
 		g_buffer_.bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		world_program_.use();
-		world_program_.uniform("projection", false, projection_);
-		world_program_.uniform("view", false, view_);
-		auto model = glm::mat4{1.f};
-		world_program_.uniform("model", false, model);
-		world_program_.uniform("normal", false, glm::mat3{glm::inverseTranspose(model)});
-		world_program_.uniform("color_texture", 0);
-		world_program_.uniform("normal_texture", 1);
-		world_program_.uniform("specular_texture", 2);
-		suzanne_->draw();
+
+		if (animation_) {
+			animation_program_.use();
+			animation_program_.uniform("projection", false, projection_);
+			animation_program_.uniform("view", false, view_);
+			auto model = glm::mat4{1.f};
+			animation_program_.uniform("model", false, model);
+			animation_program_.uniform("normal", false, glm::mat3{glm::inverseTranspose(model)});
+			animation_program_.uniform("color_texture", 0);
+			animation_program_.uniform("normal_texture", 1);
+			animation_program_.uniform("specular_texture", 2);
+			animation_program_.uniform("pose", animation_->pose().size(), false, animation_->pose());
+			animation_->update(delta_time);
+			animation_->draw();
+		} else {
+			world_program_.use();
+			world_program_.uniform("projection", false, projection_);
+			world_program_.uniform("view", false, view_);
+			auto model = glm::mat4{1.f};
+			world_program_.uniform("model", false, model);
+			world_program_.uniform("normal", false, glm::mat3{glm::inverseTranspose(model)});
+			world_program_.uniform("color_texture", 0);
+			world_program_.uniform("normal_texture", 1);
+			world_program_.uniform("specular_texture", 2);
+			suzanne_->draw();
+		}
 
 		glDisable(GL_DEPTH_TEST);
 		g_buffer_.bind_default();

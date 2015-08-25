@@ -11,7 +11,7 @@
 #include <rendering/renderer.hpp>
 
 namespace core {
-	engine::engine(const std::string& file_name) noexcept
+	engine::engine(const std::string& mesh, const std::string& skeleton) noexcept
 	: quit_{false} {
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 			auto sdl_error = std::string{SDL_GetError()};
@@ -19,9 +19,12 @@ namespace core {
 			throw std::runtime_error{"could not initialize SDL" + sdl_error};
 		}
 		graphics_system_ = std::make_unique<graphics::graphics_system>(*this);
-		renderer_ = std::make_unique<rendering::renderer>(*this, file_name);
+		renderer_ = std::make_unique<rendering::renderer>(*this, mesh, skeleton);
 
-		utils::log(utils::log_level::LOG_INFO) << "load model " << file_name << std::endl;
+		utils::log(utils::log_level::LOG_INFO) << "load mesh " << mesh << std::endl;
+		if (skeleton != "") {
+			utils::log(utils::log_level::LOG_INFO) << "load skeleton " << skeleton << std::endl;
+		}
 
 		scene_radius_ = 4.f;
 		camera_position_ = glm::vec3{0.f};
